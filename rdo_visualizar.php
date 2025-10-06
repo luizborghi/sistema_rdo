@@ -61,8 +61,14 @@ $historico = $db->prepare("
 $historico->execute([$rdo_id]);
 $historico_items = $historico->fetchAll();
 
-// Verificar se usuário pode aprovar
-$pode_aprovar = ($_SESSION['usuario_tipo'] == 'admin' || $_SESSION['usuario_tipo'] == 'engenheiro' || $_SESSION['usuario_tipo'] == 'fiscal');
+// Verificar se usuário pode aprovar ESTE RDO específico
+$pode_aprovar = false;
+
+if ($_SESSION['usuario_tipo'] == 'admin' || $_SESSION['usuario_tipo'] == 'engenheiro') {
+    $pode_aprovar = true; // Admin e Engenheiro podem aprovar qualquer RDO
+} elseif ($_SESSION['usuario_tipo'] == 'fiscal' && $rdo['obra_fiscal_id'] == $_SESSION['usuario_id']) {
+    $pode_aprovar = true; // Fiscal só pode aprovar RDOs das suas obras
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
